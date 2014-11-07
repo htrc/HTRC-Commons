@@ -55,8 +55,9 @@
                 <!--  commented out amber module as we have already deployed it into our own archiva repository -->
                 <!-- module>modules/dependencies/amber</module -->
                 <module>agent-client</module>
-                <module>useraduser-mgt-client</module>
+                <module>user-mgt-client</module>
                 <module>registry-extension-api-client</module>
+                <module>useradmin-ext-stub</module>
             </modules>
         </profile>
     </profiles>
