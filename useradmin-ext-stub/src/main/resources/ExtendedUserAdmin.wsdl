@@ -1,0 +1,202 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://extensions.wso2is.htrc.d2i.indiana.edu" xmlns:ax21="http://bean.extensions.wso2is.htrc.d2i.indiana.edu/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://extensions.wso2is.htrc.d2i.indiana.edu">
+    <wsdl:documentation>ExtendedUserAdmin</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax22="http://bean.extensions.wso2is.htrc.d2i.indiana.edu/xsd" xmlns:ns="http://org.apache.axis2/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://org.apache.axis2/xsd">
+            <xs:import namespace="http://bean.extensions.wso2is.htrc.d2i.indiana.edu/xsd"></xs:import>
+            <xs:element name="getUserInformation">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userInfoRequest" nillable="true" type="ax21:UserInfoRequest"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getUserInformationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax21:UserInfoResponse"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getUserEmailFromUserId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getUserEmailFromUserIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getUserIdsFromEmail">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="userEmail" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getUserIdsFromEmailResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://bean.extensions.wso2is.htrc.d2i.indiana.edu/xsd">
+            <xs:complexType name="UserInfoRequest">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="accessToken" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clientId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clientSecret" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="UserInfoResponse">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="authorizedUser" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="error" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="errorCode" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="errorMsg" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="userEmail" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="userFullName" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getUserEmailFromUserIdRequest">
+        <wsdl:part name="parameters" element="ns1:getUserEmailFromUserId"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getUserEmailFromUserIdResponse">
+        <wsdl:part name="parameters" element="ns1:getUserEmailFromUserIdResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getUserIdsFromEmailRequest">
+        <wsdl:part name="parameters" element="ns1:getUserIdsFromEmail"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getUserIdsFromEmailResponse">
+        <wsdl:part name="parameters" element="ns1:getUserIdsFromEmailResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getUserInformationRequest">
+        <wsdl:part name="parameters" element="ns1:getUserInformation"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="getUserInformationResponse">
+        <wsdl:part name="parameters" element="ns1:getUserInformationResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="ExtendedUserAdminPortType">
+        <wsdl:operation name="getUserEmailFromUserId">
+            <wsdl:input message="tns:getUserEmailFromUserIdRequest" wsaw:Action="urn:getUserEmailFromUserId"></wsdl:input>
+            <wsdl:output message="tns:getUserEmailFromUserIdResponse" wsaw:Action="urn:getUserEmailFromUserIdResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserIdsFromEmail">
+            <wsdl:input message="tns:getUserIdsFromEmailRequest" wsaw:Action="urn:getUserIdsFromEmail"></wsdl:input>
+            <wsdl:output message="tns:getUserIdsFromEmailResponse" wsaw:Action="urn:getUserIdsFromEmailResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserInformation">
+            <wsdl:input message="tns:getUserInformationRequest" wsaw:Action="urn:getUserInformation"></wsdl:input>
+            <wsdl:output message="tns:getUserInformationResponse" wsaw:Action="urn:getUserInformationResponse"></wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="ExtendedUserAdminSoap11Binding" type="tns:ExtendedUserAdminPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
+        <wsdl:operation name="getUserEmailFromUserId">
+            <soap:operation soapAction="urn:getUserEmailFromUserId" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserIdsFromEmail">
+            <soap:operation soapAction="urn:getUserIdsFromEmail" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserInformation">
+            <soap:operation soapAction="urn:getUserInformation" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ExtendedUserAdminSoap12Binding" type="tns:ExtendedUserAdminPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
+        <wsdl:operation name="getUserEmailFromUserId">
+            <soap12:operation soapAction="urn:getUserEmailFromUserId" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserIdsFromEmail">
+            <soap12:operation soapAction="urn:getUserIdsFromEmail" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserInformation">
+            <soap12:operation soapAction="urn:getUserInformation" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="ExtendedUserAdminHttpBinding" type="tns:ExtendedUserAdminPortType">
+        <http:binding verb="POST"></http:binding>
+        <wsdl:operation name="getUserEmailFromUserId">
+            <http:operation location="getUserEmailFromUserId"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserIdsFromEmail">
+            <http:operation location="getUserIdsFromEmail"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getUserInformation">
+            <http:operation location="getUserInformation"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="ExtendedUserAdmin">
+        <wsdl:port name="ExtendedUserAdminHttpsSoap11Endpoint" binding="tns:ExtendedUserAdminSoap11Binding">
+            <soap:address location="https://localhost:9443/services/ExtendedUserAdmin.ExtendedUserAdminHttpsSoap11Endpoint/"></soap:address>
+        </wsdl:port>
+        <wsdl:port name="ExtendedUserAdminHttpsSoap12Endpoint" binding="tns:ExtendedUserAdminSoap12Binding">
+            <soap12:address location="https://localhost:9443/services/ExtendedUserAdmin.ExtendedUserAdminHttpsSoap12Endpoint/"></soap12:address>
+        </wsdl:port>
+        <wsdl:port name="ExtendedUserAdminHttpsEndpoint" binding="tns:ExtendedUserAdminHttpBinding">
+            <http:address location="https://localhost:9443/services/ExtendedUserAdmin.ExtendedUserAdminHttpsEndpoint/"></http:address>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
