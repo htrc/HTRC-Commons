@@ -46,6 +46,7 @@
         <module>user-mgt-client</module>
         <module>registry-extension-api-client</module>
         <module>useradmin-ext-stub</module>
+        <module>oauth2-servletfilter</module>
       </modules>
       <build>
         <pluginManagement>

@@ -32,33 +32,33 @@ import org.wso2.carbon.utils.CarbonUtils;
 import java.rmi.RemoteException;
 
 public class OAuth2TokenValidationServiceClient {
-    private OAuth2TokenValidationServiceStub stub;
+  private OAuth2TokenValidationServiceStub stub;
 
-    private static final int TIMEOUT_IN_MILLIS = 15 * 60 * 1000;
+  private static final int TIMEOUT_IN_MILLIS = 15 * 60 * 1000;
 
-    public OAuth2TokenValidationServiceClient(String providerUrl, String userName, String password) throws AxisFault {
-        String serviceURL = providerUrl + "OAuth2TokenValidationService";
-        stub = new OAuth2TokenValidationServiceStub(null, serviceURL);
-        CarbonUtils.setBasicAccessSecurityHeaders(userName, password, true, stub._getServiceClient());
-        ServiceClient client = stub._getServiceClient();
-        Options options = client.getOptions();
-        options.setTimeOutInMilliSeconds(TIMEOUT_IN_MILLIS);
-        options.setProperty(HTTPConstants.SO_TIMEOUT, TIMEOUT_IN_MILLIS);
-        options.setProperty(HTTPConstants.CONNECTION_TIMEOUT, TIMEOUT_IN_MILLIS);
-        options.setCallTransportCleanup(true);
-        options.setManageSession(true);
+  public OAuth2TokenValidationServiceClient(String providerUrl, String userName, String password) throws AxisFault {
+    String serviceURL = providerUrl + "OAuth2TokenValidationService";
+    stub = new OAuth2TokenValidationServiceStub(null, serviceURL);
+    CarbonUtils.setBasicAccessSecurityHeaders(userName, password, true, stub._getServiceClient());
+    ServiceClient client = stub._getServiceClient();
+    Options options = client.getOptions();
+    options.setTimeOutInMilliSeconds(TIMEOUT_IN_MILLIS);
+    options.setProperty(HTTPConstants.SO_TIMEOUT, TIMEOUT_IN_MILLIS);
+    options.setProperty(HTTPConstants.CONNECTION_TIMEOUT, TIMEOUT_IN_MILLIS);
+    options.setCallTransportCleanup(true);
+    options.setManageSession(true);
+  }
+
+  public OAuth2TokenValidationResponseDTO validateAuthenticationRequest(OAuth2TokenValidationRequestDTO params)
+      throws OAuthProblemException, RemoteException {
+    OAuth2TokenValidationResponseDTO resp = stub.validate(params);
+    if (!resp.getValid()) {
+      if (resp.getErrorMsg().contains("expired")) {
+        throw OAuthProblemException.error(OAuthError.ResourceResponse.EXPIRED_TOKEN);
+      }
+
+      throw OAuthProblemException.error(OAuthError.ResourceResponse.INVALID_TOKEN);
     }
-
-    public OAuth2TokenValidationResponseDTO validateAuthenticationRequest(OAuth2TokenValidationRequestDTO params)
-            throws OAuthProblemException, RemoteException {
-        OAuth2TokenValidationResponseDTO resp = stub.validate(params);
-        if(!resp.getValid()){
-            if (resp.getErrorMsg().contains("expired")){
-                throw OAuthProblemException.error(OAuthError.ResourceResponse.EXPIRED_TOKEN);
-            }
-
-            throw  OAuthProblemException.error(OAuthError.ResourceResponse.INVALID_TOKEN);
-        }
-        return resp;
-    }
+    return resp;
+  }
 }
