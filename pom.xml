@@ -19,6 +19,7 @@
         <developer.code.repo>git@github.com:htrc</developer.code.repo>
         <github.repo.name>HTRC-Commons</github.repo.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
     </properties>
 
     <build>
