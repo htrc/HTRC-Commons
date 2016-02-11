@@ -2,12 +2,12 @@
     <parent>
         <groupId>edu.indiana.d2i.htrc</groupId>
         <artifactId>htrc-commons</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>oauth2-servletfilter</artifactId>
-    <version>2.2-SNAPSHOT</version>
+    <version>2.1</version>
     <packaging>jar</packaging>
 
     <name>OAuth2 Servlet Filter</name>
