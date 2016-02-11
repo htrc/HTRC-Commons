@@ -33,79 +33,79 @@ import java.util.List;
   * header.
  */
 public class OAuth2RequestWrapper extends HttpServletRequestWrapper {
-    public static final String KEY_REMOTE_USER = "htrc-remote-user";
-    public static final String KEY_REMOTE_ADDRESS = "htrc-remote-address";
-    public static final String KEY_REQUEST_ID = "htrc-request-id";
+  public static final String KEY_REMOTE_USER = "htrc-remote-user";
+  public static final String KEY_REMOTE_ADDRESS = "htrc-remote-address";
+  public static final String KEY_REQUEST_ID = "htrc-request-id";
 
-    private String remoteUser;
-    private String remoteAddress;
-    private String requestId;
+  private String remoteUser;
+  private String remoteAddress;
+  private String requestId;
 
 
-    public OAuth2RequestWrapper(HttpServletRequest request) {
-        super(request);
+  public OAuth2RequestWrapper(HttpServletRequest request) {
+    super(request);
+  }
+
+  public void setRequestId(String id) {
+    this.requestId = id;
+  }
+
+  public void setRemoteUser(String user) {
+    this.remoteUser = user;
+
+  }
+
+  public void setRemoteAddress(String address) {
+    this.remoteAddress = address;
+
+  }
+
+  @Override
+  public String getRemoteUser() {
+    return remoteUser;
+  }
+
+  public String getRemoteAddress() {
+    return remoteAddress;
+  }
+
+  public String getHeader(String name) {
+    String header = super.getHeader(name);
+    if (header == null && name.equals(KEY_REMOTE_USER)) {
+      return remoteUser;
     }
 
-    public void setRequestId(String id){
-        this.requestId = id;
+    return header;
+  }
+
+  @Override
+  public Enumeration getHeaders(String name) {
+    Enumeration headers = super.getHeaders(name);
+    if ((headers == null || !headers.hasMoreElements()) && name.equals(KEY_REMOTE_USER)) {
+      List<String> values = new ArrayList<String>();
+      values.add(remoteUser);
+
+      return Collections.enumeration(values);
+    } else if ((headers == null || !headers.hasMoreElements()) && name.equals(KEY_REMOTE_ADDRESS)) {
+      List<String> values = new ArrayList<String>();
+      values.add(getRemoteAddress());
+
+      return Collections.enumeration(values);
+    } else if ((headers == null || !headers.hasMoreElements()) && name.equals(KEY_REQUEST_ID)) {
+      List<String> values = new ArrayList<String>();
+      values.add(requestId);
+
+      return Collections.enumeration(values);
     }
 
-    public void setRemoteUser(String user){
-        this.remoteUser = user;
+    return headers;
+  }
 
-    }
-
-    public void setRemoteAddress(String address){
-        this.remoteAddress = address;
-
-    }
-
-    @Override
-    public String getRemoteUser() {
-        return remoteUser;
-    }
-
-    public String getRemoteAddress() {
-        return remoteAddress;
-    }
-
-    public String getHeader(String name) {
-        String header = super.getHeader(name);
-        if (header == null && name.equals(KEY_REMOTE_USER)){
-            return remoteUser;
-        }
-
-        return header;
-    }
-
-    @Override
-    public Enumeration getHeaders(String name) {
-        Enumeration headers = super.getHeaders(name);
-        if ((headers == null || !headers.hasMoreElements())  && name.equals(KEY_REMOTE_USER)){
-            List<String> values = new ArrayList<String>();
-            values.add(remoteUser);
-
-            return Collections.enumeration(values);
-        } else if((headers == null || !headers.hasMoreElements())  && name.equals(KEY_REMOTE_ADDRESS)){
-            List<String> values = new ArrayList<String>();
-            values.add(getRemoteAddress());
-
-            return Collections.enumeration(values);
-        } else if ((headers == null || !headers.hasMoreElements())  && name.equals(KEY_REQUEST_ID)){
-            List<String> values = new ArrayList<String>();
-            values.add(requestId);
-
-            return Collections.enumeration(values);
-        }
-
-        return headers;
-    }
-
-    public Enumeration getHeaderNames() {
-        List<String> names = Collections.list(super.getHeaderNames());
-        names.add(KEY_REMOTE_USER);
-        names.add(KEY_REMOTE_ADDRESS);
-        names.add(KEY_REQUEST_ID);
-        return Collections.enumeration(names);
-    }
+  public Enumeration getHeaderNames() {
+    List<String> names = Collections.list(super.getHeaderNames());
+    names.add(KEY_REMOTE_USER);
+    names.add(KEY_REMOTE_ADDRESS);
+    names.add(KEY_REQUEST_ID);
+    return Collections.enumeration(names);
+  }
 }
