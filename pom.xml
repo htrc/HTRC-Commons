@@ -4,10 +4,152 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.indiana.d2i.htrc</groupId>
     <artifactId>htrc-commons</artifactId>
-    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>HTRC Commons Parent</name>
-    <description>HTRC Commons Parent POM</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>agent-client</module>
+        <module>user-mgt-client</module>
+        <module>registry-extension-api-client</module>
+        <module>useradmin-ext-stub</module>
+    </modules>
+
+    <properties>
+        <github.global.server>github</github.global.server>
+        <public.code.repo>git://github.com/htrc</public.code.repo>
+        <developer.code.repo>git@github.com:htrc</developer.code.repo>
+        <github.repo.name>HTRC-Commons</github.repo.name>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>2.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <gitDescribe>
+                        <dirty>-SNAPSHOT</dirty>
+                    </gitDescribe>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>external.atlassian.jgitflow</groupId>
+                <artifactId>jgitflow-maven-plugin</artifactId>
+                <version>1.0-m5.1</version>
+                <configuration>
+                    <!-- see https://bitbucket.org/atlassian/jgit-flow/wiki/goals.wiki for configuration options -->
+                    <pushFeatures>true</pushFeatures>
+                    <pushReleases>true</pushReleases>
+                    <pushHotfixes>true</pushHotfixes>
+                    <flowInitContext>
+                        <versionTagPrefix>v</versionTagPrefix>
+                    </flowInitContext>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.5.1</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <Git-Sha>${git.commit.id}</Git-Sha>
+                                <Git-Branch>${git.branch}</Git-Branch>
+                                <Git-Version>${git.commit.id.describe}</Git-Version>
+                                <Git-Dirty>${git.dirty}</Git-Dirty>
+                                <Build-Date>${git.build.time}</Build-Date>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Project Information -->
+    <name>HTRC Commons</name>
+    <description>Commons libraries used by HTRC related projects</description>
+    <url>https://htrc.github.io/${github.repo.name}</url>
+
+    <organization>
+        <name>HathiTrust Research Center</name>
+        <url>http://www.hathitrust.org/htrc</url>
+    </organization>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <system>jira</system>
+        <url>https://jira.htrc.illinois.edu/browse/SHARC</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>bamboo</system>
+        <url>http://bamboo.htrc.illinois.edu/browse/COMMONS</url>
+    </ciManagement>
+
+    <scm>
+        <connection>scm:git:${public.code.repo}/${github.repo.name}.git</connection>
+        <developerConnection>scm:git:${developer.code.repo}/${github.repo.name}.git</developerConnection>
+        <url>https://github.com/htrc/${github.repo.name}</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!-- Reporting -->
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <!-- Repositories -->
     <repositories>
         <repository>
             <id>nexus</id>
@@ -15,6 +157,7 @@
             <url>http://nexus.htrc.illinois.edu/content/groups/public/</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>nexus</id>
@@ -22,6 +165,7 @@
             <url>http://nexus.htrc.illinois.edu/content/groups/public/</url>
         </pluginRepository>
     </pluginRepositories>
+
     <distributionManagement>
         <repository>
             <id>htrc.nexus.releases</id>
@@ -35,20 +179,4 @@
             <url>https://nexus.htrc.illinois.edu/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <!--  commented out amber module as we have already deployed it into our own archiva repository -->
-                <!-- module>modules/dependencies/amber</module -->
-                <module>agent-client</module>
-                <module>user-mgt-client</module>
-                <module>registry-extension-api-client</module>
-                <module>useradmin-ext-stub</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>
