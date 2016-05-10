@@ -54,6 +54,7 @@ public class OAuth2Filter implements Filter {
   public static final String OAUTH2_PROVIDER_USER = "oauth2.provider.user";
   public static final String OAUTH2_PROVIDER_PASSWORD = "oauth2.provider.password";
   public static final String OAUTH2_RESOURCE_REALM = "oauth2.resource.realm";
+  public static final String EXCLUDED_URLS = "excluded.urls";
   public static final String TRUST_STORE = "javax.net.ssl.trustStore";
   public static final String TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
   public static final String PN_LOG4J_PROPERTIES_PATH = "log4j.properties.path";
@@ -67,6 +68,7 @@ public class OAuth2Filter implements Filter {
   private String trustStore;
   private String trustStorePassword;
   protected AuditorFactory auditorFactory;
+  private List<String> excludedUrls;
 
   /**
    * Setup servlet filter instance after reading filter configuration in web.xml. In a production scenario where
@@ -143,6 +145,14 @@ public class OAuth2Filter implements Filter {
 
       realm = filterConfig.getInitParameter(OAUTH2_RESOURCE_REALM);
 
+      String excludedUrlsParam = filterConfig.getInitParameter(EXCLUDED_URLS);
+      if(excludedUrlsParam != null) {
+        String[] urls = excludedUrlsParam.split(";");
+        excludedUrls = Arrays.asList(urls);
+      } else {
+        excludedUrls = Collections.emptyList();
+      }
+
     } catch (Exception e) {
       log.error("OAuth2 filter initialization failed.", e);
       throw new ServletException(e);
@@ -167,6 +177,15 @@ public class OAuth2Filter implements Filter {
 
     HttpServletRequest req = (HttpServletRequest) servletRequest;
     HttpServletResponse res = (HttpServletResponse) servletResponse;
+
+    for (String excludedUrl : excludedUrls) {
+      if (req.getRequestURL().indexOf(excludedUrl) > -1) {
+        log.info("Ignoring filter for request url: " + req.getRequestURL());
+        filterChain.doFilter(servletRequest, servletResponse);
+        return;
+      }
+    }
+
     OAuth2RequestWrapper modifiedRequest = new OAuth2RequestWrapper(req);
 
     modifiedRequest.setRequestId(requestId);
