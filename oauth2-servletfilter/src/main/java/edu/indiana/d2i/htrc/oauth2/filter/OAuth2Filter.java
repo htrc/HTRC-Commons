@@ -41,7 +41,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -82,71 +81,50 @@ public class OAuth2Filter implements Filter {
    * @throws ServletException
    */
   public void init(FilterConfig filterConfig) throws ServletException {
-
+    IConfiguration configuration;
     try {
-      String log4jPath = filterConfig.getInitParameter(PN_LOG4J_PROPERTIES_PATH);
-      AuditorFactory.init(filterConfig.getInitParameter(PN_AUDITOR_CLASS));
-      auditorFactory = new AuditorFactory();
-
-      if (log4jPath != null) {
-        PropertyConfigurator.configure(log4jPath);
-      }
-
       String filterConfigFile = filterConfig.getInitParameter(OAUTH2_FILTER_CONF_FILE);
       if (filterConfigFile != null && !filterConfigFile.isEmpty() && new File(filterConfigFile).exists()) {
-        Properties oauthFilterConfig = new Properties();
-        oauthFilterConfig.load(new FileInputStream(filterConfigFile));
-
-        providerUrl = oauthFilterConfig.getProperty(OAUTH2_PROVIDER_URL);
-        if (providerUrl == null || providerUrl.isEmpty()) {
-          log.error("Cannot find OAuth2 provider URL in Oauth2 filter configuration file!");
-          throw new RuntimeException("Cannot find OAuth2 provider URL in Oauth2 filter configuration file!");
-        }
-
-        userName = oauthFilterConfig.getProperty(OAUTH2_PROVIDER_USER);
-        if (userName == null || userName.isEmpty()) {
-          log.error("Cannot find OAuth2 provider username in Oauth2 filter configuration file!");
-          throw new RuntimeException("Cannot find OAuth2 provider username in Oauth2 filter configuration file!");
-        }
-
-        password = oauthFilterConfig.getProperty(OAUTH2_PROVIDER_PASSWORD);
-        if (password == null || password.isEmpty()) {
-          log.error("Cannot find OAuth2 provider password in Oauth2 filter configuration file!");
-          throw new RuntimeException("Cannot find OAuth2 provider password in Oauth2 filter configuration file!");
-        }
+        configuration = new FileBasedConfiguration(filterConfigFile);
       } else {
-        providerUrl = filterConfig.getInitParameter(OAUTH2_PROVIDER_URL);
-        if (providerUrl == null || providerUrl.isEmpty()) {
-          log.error("Cannot find OAuth2 provider URL in filter configuration!");
-          throw new RuntimeException("Cannot find OAuth2 provider URL in filter configuration!");
-        }
+        configuration = new FilterConfigBasedConfiguration(filterConfig);
+      }
 
-        userName = filterConfig.getInitParameter(OAUTH2_PROVIDER_USER);
-        if (userName == null || userName.isEmpty()) {
-          log.error("Cannot find OAuth2 provider username in filter configuration!");
-          throw new RuntimeException("Cannot find OAuth2 provider username in filter configuration!");
-        }
+      AuditorFactory.init(configuration.getAuditorClass());
+      auditorFactory = new AuditorFactory();
 
-        password = filterConfig.getInitParameter(OAUTH2_PROVIDER_PASSWORD);
-        if (password == null || password.isEmpty()) {
-          log.error("Cannot find OAuth2 provider password in filter configuration!");
-          throw new RuntimeException("Cannot find OAuth2 provider password in filter configuration!");
-        }
+      if (configuration.getLog4jPropertiesPath() != null) {
+        PropertyConfigurator.configure(configuration.getLog4jPropertiesPath());
+      }
+
+      providerUrl = configuration.getProviderURL();
+      if (providerUrl == null || providerUrl.isEmpty()) {
+        throw new IConfiguration.ConfigurationError("Cannot find OAuth2 provider URL in filter configuration!");
+      }
+
+      userName = configuration.getProviderUser();
+      if (userName == null || userName.isEmpty()) {
+        throw new IConfiguration.ConfigurationError("Cannot find OAuth2 provider username in filter configuration!");
+      }
+
+      password = configuration.getProviderUserPass();
+      if (password == null || password.isEmpty()) {
+        throw new IConfiguration.ConfigurationError("Cannot find OAuth2 provider password in filter configuration!");
       }
 
       // Trust store can be used when WSO2 IS is deployed with self-signed certificates
-      trustStore = filterConfig.getInitParameter(TRUST_STORE);
-      trustStorePassword = filterConfig.getInitParameter(TRUST_STORE_PASSWORD);
+      trustStore = configuration.getTrustStore();
+      trustStorePassword = configuration.getTrustStorePassword();
 
       if (trustStore != null && trustStorePassword != null) {
         System.setProperty(TRUST_STORE, trustStore);
         System.setProperty(TRUST_STORE_PASSWORD, trustStorePassword);
       }
 
-      realm = filterConfig.getInitParameter(OAUTH2_RESOURCE_REALM);
+      realm = configuration.getResourceRealm();
 
-      String excludedUrlsParam = filterConfig.getInitParameter(EXCLUDED_URLS);
-      if(excludedUrlsParam != null) {
+      String excludedUrlsParam = configuration.getExcludedURLs();
+      if (excludedUrlsParam != null) {
         String[] urls = excludedUrlsParam.split(";");
         excludedUrls = Arrays.asList(urls);
       } else {
