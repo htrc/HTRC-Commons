@@ -19,9 +19,7 @@ package edu.indiana.d2i.htrc.oauth2.filter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class FileBasedConfiguration implements IConfiguration {
   private final Properties properties = new Properties();
@@ -83,7 +81,13 @@ public class FileBasedConfiguration implements IConfiguration {
   }
 
   @Override
-  public Map<String, List<String>> getAuthorizedUsersToHostsMap() {
-    return null;
+  public String getAuthorizedAdminUser() {
+    return properties.getProperty(REMOTE_HOST_AUTHORIZED_USER);
+  }
+
+  @Override
+  public Set<String> getRemoteHostsForAuthorizedAdminUser() {
+    String remoteHosts = properties.getProperty(REMOTE_HOSTS);
+    return Utils.getHostsFromCommaSeparatedStr(remoteHosts);
   }
 }

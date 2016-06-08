@@ -18,8 +18,7 @@
 package edu.indiana.d2i.htrc.oauth2.filter;
 
 import javax.servlet.FilterConfig;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class FilterConfigBasedConfiguration implements IConfiguration {
 
@@ -83,7 +82,14 @@ public class FilterConfigBasedConfiguration implements IConfiguration {
   }
 
   @Override
-  public Map<String, List<String>> getAuthorizedUsersToHostsMap() {
-    return null;
+  public String getAuthorizedAdminUser() {
+    return rawConfig.getInitParameter(REMOTE_HOST_AUTHORIZED_USER);
   }
+
+  @Override
+  public Set<String> getRemoteHostsForAuthorizedAdminUser() {
+    String remoteHosts = rawConfig.getInitParameter(REMOTE_HOSTS);
+    return Utils.getHostsFromCommaSeparatedStr(remoteHosts);
+  }
+
 }

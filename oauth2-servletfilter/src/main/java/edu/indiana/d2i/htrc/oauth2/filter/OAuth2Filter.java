@@ -49,15 +49,8 @@ public class OAuth2Filter implements Filter {
   private static Log log = LogFactory.getLog(OAuth2Filter.class);
 
   public static final String OAUTH2_FILTER_CONF_FILE = "oauth2.filter.config";
-  public static final String OAUTH2_PROVIDER_URL = "oauth2.provider.url";
-  public static final String OAUTH2_PROVIDER_USER = "oauth2.provider.user";
-  public static final String OAUTH2_PROVIDER_PASSWORD = "oauth2.provider.password";
-  public static final String OAUTH2_RESOURCE_REALM = "oauth2.resource.realm";
-  public static final String EXCLUDED_URLS = "excluded.urls";
   public static final String TRUST_STORE = "javax.net.ssl.trustStore";
   public static final String TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-  public static final String PN_LOG4J_PROPERTIES_PATH = "log4j.properties.path";
-  public static final String PN_AUDITOR_CLASS = "auditor.class";
   public static final String KEY_REMOTE_USER = "remoteuser";
 
   private String providerUrl;
@@ -68,6 +61,9 @@ public class OAuth2Filter implements Filter {
   private String trustStorePassword;
   protected AuditorFactory auditorFactory;
   private List<String> excludedUrls;
+  private boolean remoteHostBasedFilteringEnabled;
+  private String authorizedAdminUser;
+  private Set<String> filteredRemoteHostsForAdminUser;
 
   /**
    * Setup servlet filter instance after reading filter configuration in web.xml. In a production scenario where
@@ -131,6 +127,9 @@ public class OAuth2Filter implements Filter {
         excludedUrls = Collections.emptyList();
       }
 
+      remoteHostBasedFilteringEnabled = configuration.isRemoteHostBasedFilteringEnabled();
+      authorizedAdminUser = configuration.getAuthorizedAdminUser();
+      filteredRemoteHostsForAdminUser = configuration.getRemoteHostsForAuthorizedAdminUser();
     } catch (Exception e) {
       log.error("OAuth2 filter initialization failed.", e);
       throw new ServletException(e);
@@ -195,6 +194,19 @@ public class OAuth2Filter implements Filter {
 
       if (responseDTO.getAuthorizedUser() != null) {
         modifiedRequest.setRemoteUser(responseDTO.getAuthorizedUser());
+      }
+
+      // remote host validation
+      if (responseDTO.getAuthorizedUser() != null &&
+          remoteHostBasedFilteringEnabled &&
+          responseDTO.getAuthorizedUser().equals(authorizedAdminUser) &&
+          !(filteredRemoteHostsForAdminUser.contains(req.getRemoteAddr()) ||
+              filteredRemoteHostsForAdminUser.contains(req.getRemoteHost()))) {
+        errMsg = "Remote host based validation failure.";
+        log.error(errMsg);
+        auditor.log("OAUTH2_FILTER_UNAUTHENTICATED_REQUEST", requestId, accessToken);
+        auditor.error(errMsg, accessToken, responseDTO.getAuthorizedUser(), req.getRemoteAddr());
+        throw new ServletException("Remote host based validation failure.");
       }
 
       Map<String, List<String>> contextMap = contextExtractor.getContextMap();
@@ -289,4 +301,6 @@ public class OAuth2Filter implements Filter {
   private String randomUUID() {
     return UUID.randomUUID().toString();
   }
+
+
 }

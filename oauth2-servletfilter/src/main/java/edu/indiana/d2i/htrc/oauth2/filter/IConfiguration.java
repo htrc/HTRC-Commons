@@ -17,8 +17,8 @@
 */
 package edu.indiana.d2i.htrc.oauth2.filter;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface IConfiguration {
   static final String OAUTH2_FILTER_CONF_FILE = "oauth2.filter.config";
@@ -32,8 +32,9 @@ public interface IConfiguration {
   static final String PN_LOG4J_PROPERTIES_PATH = "log4j.properties.path";
   static final String PN_AUDITOR_CLASS = "auditor.class";
   static final String REMOTE_HOST_BASED_FILTERING = "remote.host.based.filtering";
-  static final String REMOTE_HOST_NAME = "remote.host.based.filtering.%s.hostname";
-  static final String REMOTE_HOST_AUTHORIZED_USERS = "remote.host.based.filtering.%s.authorized.users";
+  static final String REMOTE_HOST_PREFIX = "remote.host.based.filtering.";
+  static final String REMOTE_HOSTS = REMOTE_HOST_PREFIX + "hosts";
+  static final String REMOTE_HOST_AUTHORIZED_USER = REMOTE_HOST_PREFIX + "authorized.user";
 
   String getProviderURL();
   String getProviderUser();
@@ -45,7 +46,8 @@ public interface IConfiguration {
   String getAuditorClass();
   String getLog4jPropertiesPath();
   boolean isRemoteHostBasedFilteringEnabled();
-  Map<String, List<String>> getAuthorizedUsersToHostsMap();
+  String getAuthorizedAdminUser();
+  Set<String> getRemoteHostsForAuthorizedAdminUser();
 
   public static class ConfigurationError extends Exception {
     public ConfigurationError() {
